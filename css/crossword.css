@@ -1,27 +1,60 @@
 .word--crossword {
-	font-size: 13vh;
-	font-family: 'Barrio', serif;
-	font-weight: 400;
-	text-transform: uppercase;
-	color: #fff;
-	line-height: 0.9;
-	margin: 0;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, 0.65em);
-	justify-self: center;
+  font-size: 13vh;
+  font-family: "Barrio", serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 0.9;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 0.65em);
+  justify-content: center;
+  grid-gap: 0.25em;
 }
 
 .word--crossword span {
-	text-align: center;	
-	display: block;
+  text-align: center;
+  display: block;
+  grid-row: 1;
 }
 
 .word__cross {
-	pointer-events: none;
-	color: #3f2b9a;
+  pointer-events: none;
+  color: #3f2b9a;
+  position: relative;
 }
 
 .word__cross span {
-	opacity: 0;
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
 
+.word__main {
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  color: #fff;
+  transition: color 0.3s;
+}
+
+.word__main:hover {
+  color: #3f2b9a;
+}
+
+.word__main:hover + .word__cross span {
+  opacity: 1;
+  animation: crossword 0.4s ease-out forwards;
+}
+
+@keyframes crossword {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
