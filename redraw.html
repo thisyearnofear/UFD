@@ -24,12 +24,48 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
+        position: relative;
+        z-index: 2;
       }
       .word {
         font-size: 3em;
         line-height: 1.2;
         text-align: center;
         margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .background-collage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      .background-collage img {
+        position: absolute;
+        transition: opacity 0.3s ease;
+      }
+      /* Landscape images */
+      .background-collage img:nth-child(1) {
+        width: 40%;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10%;
+      }
+      .background-collage img:nth-child(2) {
+        width: 35%;
+        left: 5%;
+        bottom: 12%;
+      }
+      /* Portrait/Square images */
+      .background-collage img:nth-child(3) {
+        height: 50%;
+        width: auto;
+        right: 10%;
+        bottom: 5%;
       }
     </style>
     <script>
@@ -80,6 +116,11 @@
       </symbol>
     </svg>
     <main>
+      <div class="background-collage">
+        <img src="public/FUD11.jpeg" alt="" />
+        <img src="public/FUD03.png" alt="" />
+        <img src="public/FUD04.png" alt="" />
+      </div>
       <div class="content content--fixed">
         <header class="codrops-header">
           <h1 class="codrops-header__title">

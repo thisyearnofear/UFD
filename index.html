@@ -49,12 +49,96 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
+        position: relative;
+        z-index: 2;
       }
       .word {
         font-size: 3em;
         line-height: 1.2;
         text-align: center;
         margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .background-collage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.2;
+        pointer-events: none;
+      }
+      .background-collage img {
+        position: absolute;
+        transition: opacity 0.3s ease;
+      }
+      /* Landscape images */
+      .background-collage img:nth-child(1) {
+        width: 45%;
+        left: 5%;
+        top: 5%;
+        transform: rotate(-5deg);
+      }
+      .background-collage img:nth-child(3) {
+        width: 40%;
+        right: 2%;
+        top: 8%;
+        transform: rotate(3deg);
+      }
+      .background-collage img:nth-child(5) {
+        width: 42%;
+        left: 30%;
+        top: 25%;
+        transform: rotate(-2deg);
+      }
+      .background-collage img:nth-child(7) {
+        width: 38%;
+        right: 15%;
+        bottom: 15%;
+        transform: rotate(4deg);
+      }
+      .background-collage img:nth-child(9) {
+        width: 40%;
+        left: 10%;
+        bottom: 10%;
+        transform: rotate(-3deg);
+      }
+      /* Portrait/Square images */
+      .background-collage img:nth-child(2) {
+        height: 50%;
+        width: auto;
+        right: 25%;
+        top: 2%;
+        transform: rotate(2deg);
+      }
+      .background-collage img:nth-child(4) {
+        height: 45%;
+        width: auto;
+        left: 20%;
+        bottom: 5%;
+        transform: rotate(-4deg);
+      }
+      .background-collage img:nth-child(6) {
+        height: 48%;
+        width: auto;
+        right: 8%;
+        top: 20%;
+        transform: rotate(3deg);
+      }
+      .background-collage img:nth-child(8) {
+        height: 42%;
+        width: auto;
+        left: 40%;
+        bottom: 8%;
+        transform: rotate(-2deg);
+      }
+      .background-collage img:nth-child(10) {
+        height: 44%;
+        width: auto;
+        right: 35%;
+        bottom: 12%;
+        transform: rotate(5deg);
       }
     </style>
   </head>
@@ -83,6 +167,18 @@
       </symbol>
     </svg>
     <main>
+      <div class="background-collage">
+        <img src="public/FUD01.png" alt="" />
+        <img src="public/FUD02.png" alt="" />
+        <img src="public/FUD03.png" alt="" />
+        <img src="public/FUD04.png" alt="" />
+        <img src="public/FUD05.png" alt="" />
+        <img src="public/FUD06.png" alt="" />
+        <img src="public/FUD07.jpeg" alt="" />
+        <img src="public/FUD08.jpeg" alt="" />
+        <img src="public/FUD09.jpeg" alt="" />
+        <img src="public/FUD11.jpeg" alt="" />
+      </div>
       <div class="content content--fixed">
         <header class="codrops-header">
           <h1 class="codrops-header__title">

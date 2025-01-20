@@ -24,12 +24,15 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
+        position: relative;
+        z-index: 2;
       }
       .word {
         font-size: 3em;
         line-height: 1.2;
         text-align: center;
         margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
       }
       .word--swing span:nth-child(4n) {
         color: #ff6b6b;
@@ -42,6 +45,44 @@
       }
       .word--swing span:nth-child(4n + 3) {
         color: #96ceb4;
+      }
+      .background-collage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      .background-collage img {
+        position: absolute;
+        transition: opacity 0.3s ease;
+      }
+      /* Landscape images */
+      .background-collage img:nth-child(1) {
+        width: 38%;
+        left: 5%;
+        bottom: 15%;
+      }
+      .background-collage img:nth-child(3) {
+        width: 42%;
+        right: 5%;
+        top: 10%;
+      }
+      /* Portrait/Square images */
+      .background-collage img:nth-child(2) {
+        height: 45%;
+        width: auto;
+        right: 25%;
+        bottom: 5%;
+      }
+      .background-collage img:nth-child(4) {
+        height: 42%;
+        width: auto;
+        left: 30%;
+        top: 8%;
       }
     </style>
     <script>
@@ -92,6 +133,12 @@
       </symbol>
     </svg>
     <main>
+      <div class="background-collage">
+        <img src="public/FUD07.jpeg" alt="" />
+        <img src="public/FUD08.jpeg" alt="" />
+        <img src="public/FUD09.jpeg" alt="" />
+        <img src="public/FUD06.png" alt="" />
+      </div>
       <div class="content content--fixed">
         <header class="codrops-header">
           <h1 class="codrops-header__title">
