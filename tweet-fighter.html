@@ -225,90 +225,68 @@
           display: none;
         }
       }
+      .back-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 0.5em 1em;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 1em;
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        transition: all 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-2px);
+      }
+
+      @media screen and (max-width: 768px) {
+        .back-button {
+          font-size: 0.9em;
+          padding: 0.4em 0.8em;
+        }
+        .content--fixed,
+        .top-left-nav {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
     <main>
-      <div class="top-left-nav">
-        <nav class="demos">
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="unicorns.html"></a>
-          <a class="demo" href="donald.html"></a>
-          <a class="demo" href="fud.html"></a>
-          <a
-            class="demo demo--current"
-            href="tweet-fighter.html"
-            data-text="GAMES 🎮"
-          ></a>
-          <a class="demo" href="fake-news.html"></a>
-          <span class="nav-arrow">➜</span>
-        </nav>
-      </div>
-      <div class="content content--fixed">
-        <p class="codrops-header__tagline">
-          <a
-            href="https://dexscreener.com/solana/2hwplyryzycbcjfrehdgofpzcxl9u93yzwj9qqlrvlt9"
-            target="_blank"
-            >💨 FARTS</a
-          >
-          <span class="separator">|</span>
-          <a
-            href="https://dexscreener.com/solana/2hwplyryzycbcjfrehdgofpzcxl9u93yzwj9qqlrvlt9"
-            target="_blank"
-            >🦄 UNICORNS
-          </a>
-          <span class="separator">|</span>
-          <a
-            href="https://dexscreener.com/solana/2hwplyryzycbcjfrehdgofpzcxl9u93yzwj9qqlrvlt9"
-            target="_blank"
-            >🇺🇸 DONALD</a
-          >
-        </p>
-        <nav class="demos">
-          <span class="nav-arrow">➜</span>
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="unicorns.html"></a>
-          <a class="demo" href="donald.html"></a>
-          <a class="demo" href="fud.html"></a>
-          <a
-            class="demo demo--current"
-            href="tweet-fighter.html"
-            data-text="GAMES 🎮"
-          ></a>
-          <a class="demo" href="fake-news.html"></a>
-        </nav>
-        <p class="deco">
-          <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
-          <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
-          <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
-        </p>
-      </div>
-      <section class="content content--layout">
-        <div class="game-container">
-          <div class="banner-left">
-            <img src="FUD01.png" alt="" style="--rotation: -5deg" />
-            <img src="FUD03.png" alt="" style="--rotation: 3deg" />
-            <img src="FUD05.png" alt="" style="--rotation: -4deg" />
-            <img src="FUD07.jpeg" alt="" style="--rotation: 5deg" />
-          </div>
-
-          <iframe
-            src="https://britzl.github.io/TweetFighter/"
-            class="game-frame"
-            frameborder="0"
-          ></iframe>
-
-          <div class="banner-right">
-            <img src="FUD02.png" alt="" style="--rotation: 4deg" />
-            <img src="FUD04.png" alt="" style="--rotation: -3deg" />
-            <img src="FUD06.png" alt="" style="--rotation: 2deg" />
-            <img src="FUD08.jpeg" alt="" style="--rotation: -5deg" />
-          </div>
+      <a href="unicorns.html" class="back-button">← Back</a>
+      <div class="game-container">
+        <div class="banner-left">
+          <img src="FUD01.png" alt="" style="--rotation: -5deg" />
+          <img src="FUD03.png" alt="" style="--rotation: 3deg" />
+          <img src="FUD05.png" alt="" style="--rotation: -4deg" />
+          <img src="FUD07.jpeg" alt="" style="--rotation: 5deg" />
         </div>
-        <div class="game-selector">
-          <a href="fake-news.html" class="game-link">Play AI Invasion 🤖</a>
+
+        <iframe
+          src="https://britzl.github.io/TweetFighter/"
+          class="game-frame"
+          frameborder="0"
+        ></iframe>
+
+        <div class="banner-right">
+          <img src="FUD02.png" alt="" style="--rotation: 4deg" />
+          <img src="FUD04.png" alt="" style="--rotation: -3deg" />
+          <img src="FUD06.png" alt="" style="--rotation: 2deg" />
+          <img src="FUD08.jpeg" alt="" style="--rotation: -5deg" />
         </div>
-      </section>
+      </div>
+      <div class="game-selector">
+        <a href="fake-news.html" class="game-link">Play AI Invasion 🤖</a>
+      </div>
     </main>
     <script src="js/farts.js"></script>
   </body>

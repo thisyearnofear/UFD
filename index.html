@@ -36,10 +36,16 @@
         alert(
           "Please view this demo in a modern browser that supports CSS Variables."
         );
+
+      // Mobile redirect
+      if (window.innerWidth <= 768) {
+        window.location.href = "unicorns.html";
+      }
     </script>
     <style>
       .content--layout {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
@@ -49,6 +55,13 @@
       .word {
         font-size: 3em;
         line-height: 1.2;
+        text-align: center;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .word.word--magneto {
+        font-size: 5vw;
+        line-height: 1.5;
         text-align: center;
         margin: 0;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -138,10 +151,9 @@
         padding: 1em 0;
         display: flex;
         align-items: center;
-        gap: 1em;
+        gap: 0.8em;
         position: relative;
-        justify-content: center;
-        flex-wrap: wrap;
+        justify-content: flex-start;
       }
       .demo {
         padding: 0.25em 0.5em;
@@ -153,15 +165,12 @@
       .demo--current::before {
         content: attr(data-text);
         position: absolute;
-        top: -2em;
+        bottom: -2.5em;
         left: 50%;
         transform: translateX(-50%);
+        font-size: 0.9em;
         white-space: nowrap;
         animation: illuminate 2s ease-in-out infinite;
-        font-size: 0.9em;
-        display: flex;
-        align-items: center;
-        gap: 0.5em;
       }
       .demo--current .emoji {
         position: absolute;
@@ -190,26 +199,41 @@
       }
       .nav-arrow {
         position: absolute;
-        top: -2.5em;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 2.5em;
+        top: 50%;
+        right: -2em;
+        transform: translateY(-50%);
+        font-size: 2em;
         color: #ff6b6b;
         animation: mega-bounce-glow 1.5s ease-in-out infinite;
-        text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b, 0 0 60px #ff6b6b;
-        cursor: pointer;
-        user-select: none;
-        z-index: 1;
+        text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b;
       }
+
+      /* Sequential button illumination */
+      .demos .demo {
+        animation: sequentialGlow 4s infinite;
+        animation-delay: calc(var(--sequence) * 0.5s);
+      }
+
+      @keyframes sequentialGlow {
+        0%,
+        100% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        50% {
+          background: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+      }
+
       @keyframes mega-bounce-glow {
         0%,
         100% {
-          transform: translateX(-50%) scale(1) rotate(0deg);
+          transform: translateY(-50%) scale(1) rotate(0deg);
           opacity: 0.7;
           filter: brightness(1);
         }
         50% {
-          transform: translateX(-50%) scale(1.5) rotate(15deg);
+          transform: translateY(-50%) scale(1.2) rotate(15deg);
           opacity: 1;
           filter: brightness(1.5);
         }
@@ -217,49 +241,185 @@
 
       /* Mobile Optimization */
       @media screen and (max-width: 768px) {
-        .demos {
+        body {
+          overflow: hidden;
+          height: 100vh;
+          position: fixed;
+          width: 100%;
+        }
+
+        .content--fixed {
+          position: fixed;
+          width: 100%;
+          z-index: 100;
+        }
+
+        .codrops-header__tagline {
+          position: fixed;
+          bottom: 20px;
+          left: 0;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           gap: 0.5em;
+          font-size: 0.9em;
+          padding: 0.5em;
+          z-index: 101;
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
+
+        .demos {
+          position: fixed;
+          top: 20px;
+          left: 0;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          gap: 1em;
+          padding: 0;
+          z-index: 101;
+        }
+
         .demo {
-          padding: 0.2em 0.4em;
-        }
-        .nav-arrow {
-          font-size: 2em;
-          top: -2em;
-        }
-        .demo--current::before {
-          font-size: 0.8em;
-          top: -2.2em;
-        }
-        .codrops-header__title {
+          position: relative;
           font-size: 1em;
+          padding: 0.3em 0.6em;
+          border-radius: 4px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(5px);
         }
-        .content--layout {
+
+        .demo--current {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        .demo--current::before {
+          content: attr(data-text);
+          position: absolute;
+          bottom: -2em;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.9em;
+          white-space: nowrap;
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .nav-arrow {
+          position: fixed;
+          bottom: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 2em;
+          animation: mega-bounce-glow 1.5s ease-in-out infinite;
+          text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b;
+        }
+
+        .word {
+          font-size: 15vw;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
           padding: 0 1em;
+          text-align: center;
+        }
+
+        .word.word--magneto {
+          font-size: 20vw;
+        }
+
+        .deco {
+          display: none;
+        }
+
+        .top-left-nav {
+          display: none;
+        }
+
+        .background-collage img {
+          opacity: 0.15;
+        }
+
+        /* Touch-friendly hover states */
+        .demo:active {
+          background: rgba(255, 255, 255, 0.2);
+          transition: background 0.1s;
         }
       }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
       .top-left-nav {
         position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 100;
+        top: 2em;
+        left: 2em;
+        z-index: 1000;
       }
       .top-left-nav .demos {
-        flex-direction: row;
         padding: 0;
-        margin-bottom: 2.5em;
+        gap: 0.5em;
+      }
+      .top-left-nav .demo {
+        padding: 0.25em 0.5em;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.85em;
+        transition: all 0.3s ease;
+      }
+      .top-left-nav .demo--current {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .top-left-nav .demo:not(.demo--current)::before {
+        display: none;
       }
       .top-left-nav .demo--current::before {
-        top: auto;
-        bottom: -2em;
+        content: attr(data-text);
+        position: absolute;
+        top: calc(100% + 0.5em);
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 0.9em;
+        white-space: nowrap;
+        animation: illuminate 2s ease-in-out infinite;
       }
       .top-left-nav .nav-arrow {
-        top: auto;
-        bottom: -2.5em;
+        position: absolute;
+        top: 50%;
+        right: -1.5em;
+        transform: translateY(-50%);
+        font-size: 1.5em;
+        color: #ff6b6b;
+        animation: mega-bounce-glow 1.5s ease-in-out infinite;
+      }
+      .top-left-nav .demo:hover:not(.demo--current) {
+        background: rgba(255, 255, 255, 0.1);
       }
       @media screen and (max-width: 768px) {
         .top-left-nav {
+          display: none;
+        }
+      }
+
+      /* Mobile Optimization */
+      @media screen and (max-width: 768px) {
+        .desktop-only {
+          display: none;
+        }
+      }
+      @media screen and (min-width: 769px) {
+        .mobile-only {
           display: none;
         }
       }
@@ -323,15 +483,15 @@
           >
         </p>
         <nav class="demos">
-          <span class="nav-arrow">➜</span>
           <a
             class="demo demo--current"
             href="index.html"
             data-text="FARTS 💨"
+            style="--sequence: 1"
           ></a>
-          <a class="demo" href="unicorns.html"></a>
-          <a class="demo" href="donald.html"></a>
-          <a class="demo" href="fud.html"></a>
+          <a class="demo" href="unicorns.html" style="--sequence: 2"></a>
+          <a class="demo" href="donald.html" style="--sequence: 3"></a>
+          <a class="demo" href="fud.html" style="--sequence: 4"></a>
           <a class="demo" href="tweet-fighter.html"></a>
           <a class="demo" href="fake-news.html"></a>
         </nav>
@@ -353,6 +513,7 @@
           <a
             class="demo demo--current"
             href="index.html"
+            style="color: black"
             data-text="FARTS 💨"
           ></a>
           <a class="demo" href="unicorns.html"></a>

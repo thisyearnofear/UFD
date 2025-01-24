@@ -54,6 +54,9 @@
         align-items: center;
         gap: 0.5em;
       }
+      .demo:not(.demo--current)::before {
+        display: none;
+      }
       .demo--current .emoji {
         position: absolute;
         top: -2em;
@@ -106,55 +109,184 @@
         }
       }
 
+      /* Desktop Styles */
+      .demos {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+
+      .demo {
+        margin: 0 0.15em;
+      }
+
+      .demo--current::before {
+        content: attr(data-text);
+        position: absolute;
+        top: -2em;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.9em;
+        white-space: nowrap;
+        animation: illuminate 2s ease-in-out infinite;
+      }
+
+      .nav-arrow {
+        position: absolute;
+        top: -2.5em;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.5em;
+        color: #ff6b6b;
+        animation: mega-bounce-glow 1.5s ease-in-out infinite;
+        text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b, 0 0 60px #ff6b6b;
+        cursor: pointer;
+        user-select: none;
+        z-index: 1;
+      }
+
       /* Mobile Optimization */
       @media screen and (max-width: 768px) {
+        body {
+          overflow: hidden;
+          height: 100vh;
+          position: fixed;
+          width: 100%;
+        }
+
         .demos {
-          gap: 0.5em;
+          position: fixed;
+          top: 20px;
+          left: 0;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          gap: 0.8em;
+          padding: 0.5em;
+          z-index: 101;
         }
+
         .demo {
-          padding: 0.2em 0.4em;
+          position: relative;
+          font-size: 0.9em;
+          padding: 0.3em 0.6em;
+          border-radius: 4px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(5px);
+          animation: sequentialGlow 4s infinite;
+          animation-delay: calc(var(--sequence) * 0.5s);
+          margin: 0;
         }
-        .nav-arrow {
-          font-size: 2em;
-          top: -2em;
+
+        .demo--current {
+          background: rgba(255, 255, 255, 0.2);
         }
+
         .demo--current::before {
-          font-size: 0.8em;
-          top: -2.2em;
+          top: 2.5em;
+          font-size: 0.9em;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+            0 0 20px rgba(255, 255, 255, 0.5);
         }
-        .codrops-header__title {
-          font-size: 1em;
-        }
-        .content--layout {
-          padding: 0 1em;
-        }
-        .word {
+
+        .nav-arrow {
+          position: fixed;
+          bottom: 80px;
+          top: auto;
           font-size: 2em;
         }
-      }
-      .top-left-nav {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 100;
-      }
-      .top-left-nav .demos {
-        flex-direction: row;
-        padding: 0;
-        margin-bottom: 2.5em;
-      }
-      .top-left-nav .demo--current::before {
-        top: auto;
-        bottom: -2em;
-        font-size: 0.9em;
-      }
-      .top-left-nav .nav-arrow {
-        top: auto;
-        bottom: -2.5em;
-      }
-      @media screen and (max-width: 768px) {
+
+        .codrops-header__tagline {
+          position: fixed;
+          bottom: 20px;
+          left: 0;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 1em;
+          font-size: 0.9em;
+          padding: 0.5em;
+          z-index: 101;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .word {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 15vw;
+          text-align: center;
+          width: 100%;
+          padding: 0 1em;
+          z-index: 100;
+        }
+
+        .deco {
+          display: none;
+        }
+
         .top-left-nav {
           display: none;
+        }
+
+        .background-collage img {
+          opacity: 0.15;
+        }
+      }
+      @media screen and (min-width: 769px) {
+        .top-left-nav {
+          position: fixed;
+          top: 2em;
+          left: 2em;
+          z-index: 1000;
+        }
+
+        .top-left-nav .demos {
+          padding: 0;
+          gap: 0.5em;
+        }
+
+        .top-left-nav .demo {
+          padding: 0.25em 0.5em;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 4px;
+          color: #fff;
+          text-decoration: none;
+          font-size: 0.85em;
+          transition: all 0.3s ease;
+        }
+
+        .top-left-nav .demo--current {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .top-left-nav .demo--current::before {
+          content: attr(data-text);
+          position: absolute;
+          top: calc(100% + 0.5em);
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.9em;
+          white-space: nowrap;
+          animation: illuminate 2s ease-in-out infinite;
+        }
+
+        .top-left-nav .nav-arrow {
+          position: absolute;
+          top: 50%;
+          right: -1.5em;
+          transform: translateY(-50%);
+          font-size: 1.5em;
+          color: #ff6b6b;
+          animation: mega-bounce-glow 1.5s ease-in-out infinite;
+        }
+
+        .top-left-nav .demo:hover:not(.demo--current) {
+          background: rgba(255, 255, 255, 0.1);
         }
       }
     </style>
@@ -206,41 +338,23 @@
       </symbol>
     </svg>
     <main>
-      <style>
-        .top-left-nav {
-          position: fixed;
-          top: 20px;
-          left: 20px;
-          z-index: 100;
-        }
-        .top-left-nav .demos {
-          flex-direction: row;
-          padding: 0;
-          margin-bottom: 2.5em;
-        }
-        .top-left-nav .demo--current::before {
-          top: auto;
-          bottom: -2em;
-          font-size: 0.9em;
-        }
-        .top-left-nav .nav-arrow {
-          top: auto;
-          bottom: -2.5em;
-        }
-        @media screen and (max-width: 768px) {
-          .top-left-nav {
-            display: none;
-          }
-        }
-      </style>
       <div class="top-left-nav">
         <nav class="demos">
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="unicorns.html"></a>
-          <a class="demo" href="donald.html"></a>
-          <a class="demo demo--current" href="fud.html" data-text="$FUD $"></a>
-          <a class="demo" href="tweet-fighter.html"></a>
-          <a class="demo" href="fake-news.html"></a>
+          <a class="demo" href="index.html" data-text="HOME"></a>
+          <a class="demo" href="unicorns.html" data-text="UNICORNS"></a>
+          <a class="demo" href="donald.html" data-text="DONALD"></a>
+          <a
+            class="demo demo--current"
+            href="fud.html"
+            style="color: black"
+            data-text="FUD"
+          ></a>
+          <a
+            class="demo"
+            href="tweet-fighter.html"
+            data-text="TWEET FIGHTER"
+          ></a>
+          <a class="demo" href="fake-news.html" data-text="FAKE NEWS"></a>
           <span class="nav-arrow">➜</span>
         </nav>
       </div>
@@ -265,13 +379,37 @@
           >
         </p>
         <nav class="demos">
+          <a
+            class="demo"
+            href="unicorns.html"
+            data-text="UNICORNS 🦄"
+            style="--sequence: 1"
+          ></a>
+          <a
+            class="demo"
+            href="donald.html"
+            data-text="DONALD 🇺🇸"
+            style="--sequence: 2"
+          ></a>
+          <a
+            class="demo demo--current"
+            href="fud.html"
+            data-text="$FUD $"
+            style="--sequence: 3"
+          ></a>
+          <a
+            class="demo"
+            href="tweet-fighter.html"
+            data-text="GAMES 🎮"
+            style="--sequence: 4"
+          ></a>
+          <a
+            class="demo"
+            href="fake-news.html"
+            data-text="AI INVASION 🤖"
+            style="--sequence: 5"
+          ></a>
           <span class="nav-arrow">➜</span>
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="unicorns.html"></a>
-          <a class="demo" href="donald.html"></a>
-          <a class="demo demo--current" href="fud.html" data-text="$FUD $"></a>
-          <a class="demo" href="tweet-fighter.html"></a>
-          <a class="demo" href="fake-news.html"></a>
         </nav>
         <p class="deco">
           <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
