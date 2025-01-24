@@ -5,25 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>FUD</title>
     <meta name="description" content="Farts, Unicorns, and Donald" />
-    <meta <meta name="author" content="FUD" />
+    <meta name="keywords" content="FARTS, UNICORNS, DONALD" />
+    <meta name="author" content="Codrops" />
     <link rel="shortcut icon" href="favicon.ico" />
     <link
-      href="https://fonts.googleapis.com/css?family=Nunito:400,700|Barrio"
+      href="https://fonts.googleapis.com/css?family=Nunito:400,700|Londrina+Outline|Londrina+Solid"
       rel="stylesheet"
     />
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/demo.css" />
-    <link rel="stylesheet" type="text/css" href="css/crossword.css" />
+    <link rel="stylesheet" type="text/css" href="css/swing.css" />
     <style>
       .content--layout {
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
+        position: relative;
+        z-index: 2;
       }
       .word {
+        font-size: 3em;
+        line-height: 1.2;
         text-align: center;
         margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .word--swing span:nth-child(4n) {
+        color: #ff6b6b;
+      }
+      .word--swing span:nth-child(4n + 1) {
+        color: #4ecdc4;
+      }
+      .word--swing span:nth-child(4n + 2) {
+        color: #45b7d1;
+      }
+      .word--swing span:nth-child(4n + 3) {
+        color: #96ceb4;
+      }
+      .background-collage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      .background-collage img {
+        position: absolute;
+        transition: opacity 0.3s ease;
+      }
+      /* Landscape images */
+      .background-collage img:nth-child(1) {
+        width: 38%;
+        left: 5%;
+        bottom: 15%;
+      }
+      .background-collage img:nth-child(3) {
+        width: 42%;
+        right: 5%;
+        top: 10%;
+      }
+      /* Portrait/Square images */
+      .background-collage img:nth-child(2) {
+        height: 45%;
+        width: auto;
+        right: 25%;
+        bottom: 5%;
+      }
+      .background-collage img:nth-child(4) {
+        height: 42%;
+        width: auto;
+        left: 30%;
+        top: 8%;
       }
       .demos {
         padding: 1em 0;
@@ -131,6 +187,10 @@
         .word {
           font-size: 2em;
         }
+        .background-collage img {
+          width: 50% !important;
+          height: auto !important;
+        }
       }
       .top-left-nav {
         position: fixed;
@@ -181,7 +241,7 @@
         );
     </script>
   </head>
-  <body class="demo-crossword">
+  <body class="demo-swing">
     <svg class="hidden">
       <symbol id="icon-arrow" viewBox="0 0 24 24">
         <title>arrow</title>
@@ -206,47 +266,11 @@
       </symbol>
     </svg>
     <main>
-      <style>
-        .top-left-nav {
-          position: fixed;
-          top: 20px;
-          left: 20px;
-          z-index: 100;
-        }
-        .top-left-nav .demos {
-          flex-direction: row;
-          padding: 0;
-          margin-bottom: 2.5em;
-        }
-        .top-left-nav .demo--current::before {
-          top: auto;
-          bottom: -2em;
-          font-size: 0.9em;
-        }
-        .top-left-nav .nav-arrow {
-          top: auto;
-          bottom: -2.5em;
-        }
-        @media screen and (max-width: 768px) {
-          .top-left-nav {
-            display: none;
-          }
-        }
-      </style>
-      <div class="top-left-nav">
-        <nav class="demos">
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="redraw.html"></a>
-          <a class="demo" href="swing.html"></a>
-          <a
-            class="demo demo--current"
-            href="crossword.html"
-            data-text="$FUD $"
-          ></a>
-          <a class="demo" href="games.html"></a>
-          <a class="demo" href="ai-invasion.html"></a>
-          <span class="nav-arrow">➜</span>
-        </nav>
+      <div class="background-collage">
+        <img src="FUD07.jpeg" alt="" />
+        <img src="FUD08.jpeg" alt="" />
+        <img src="FUD09.jpeg" alt="" />
+        <img src="FUD06.png" alt="" />
       </div>
       <div class="content content--fixed">
         <p class="codrops-header__tagline">
@@ -271,15 +295,15 @@
         <nav class="demos">
           <span class="nav-arrow">➜</span>
           <a class="demo" href="index.html"></a>
-          <a class="demo" href="redraw.html"></a>
-          <a class="demo" href="swing.html"></a>
+          <a class="demo" href="unicorns.html"></a>
           <a
             class="demo demo--current"
-            href="crossword.html"
-            data-text="$FUD $"
+            href="donald.html"
+            data-text="DONALD 🇺🇸"
           ></a>
-          <a class="demo" href="games.html"></a>
-          <a class="demo" href="ai-invasion.html"></a>
+          <a class="demo" href="fud.html"></a>
+          <a class="demo" href="tweet-fighter.html"></a>
+          <a class="demo" href="fake-news.html"></a>
         </nav>
         <p class="deco">
           <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
@@ -288,17 +312,32 @@
         </p>
       </div>
       <section class="content content--layout">
-        <h2 class="word word--crossword">
-          <span class="word__main" data-column="1" data-row="4">FUD</span>
-          <span class="word__cross" data-column="1" data-row="4">FARTS</span>
-          <span class="word__cross" data-column="2" data-row="4">UNICORNS</span>
-          <span class="word__cross" data-column="3" data-row="4">DONALD</span>
+        <h2 class="word word--swing">
+          FARTS<br />
+          UNICORNS<br />
+          DONALD
         </h2>
       </section>
+      <div class="top-left-nav">
+        <nav class="demos">
+          <a class="demo" href="index.html"></a>
+          <a class="demo" href="unicorns.html"></a>
+          <a
+            class="demo demo--current"
+            href="donald.html"
+            data-text="DONALD 🇺🇸"
+          ></a>
+          <a class="demo" href="fud.html"></a>
+          <a class="demo" href="tweet-fighter.html"></a>
+          <a class="demo" href="fake-news.html"></a>
+          <span class="nav-arrow">➜</span>
+        </nav>
+      </div>
     </main>
     <script src="js/charming.min.js"></script>
     <script src="js/anime.min.js"></script>
     <script src="js/demo.js"></script>
-    <script src="js/demo7.js"></script>
+    <script src="js/demo4.js"></script>
+    <script src="js/farts.js"></script>
   </body>
 </html>

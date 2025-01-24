@@ -3,83 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FUD</title>
+    <title>FUD Games</title>
     <meta name="description" content="Farts, Unicorns, and Donald" />
     <meta name="keywords" content="FARTS, UNICORNS, DONALD" />
-    <meta name="author" content="Codrops" />
+    <meta name="author" content="FUD" />
     <link rel="shortcut icon" href="favicon.ico" />
     <link
-      href="https://fonts.googleapis.com/css?family=Nunito:400,700|Londrina+Outline|Londrina+Solid"
+      href="https://fonts.googleapis.com/css?family=Nunito:400,700"
       rel="stylesheet"
     />
     <link rel="stylesheet" type="text/css" href="css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="css/demo.css" />
-    <link rel="stylesheet" type="text/css" href="css/swing.css" />
     <style>
       .content--layout {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
         position: relative;
         z-index: 2;
+        padding: 0;
       }
-      .word {
-        font-size: 3em;
-        line-height: 1.2;
-        text-align: center;
-        margin: 0;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      .game-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        position: relative;
+        overflow: hidden;
       }
-      .word--swing span:nth-child(4n) {
-        color: #ff6b6b;
+      .game-frame {
+        width: 500px;
+        height: 100%;
+        margin: 0 auto;
+        border: none;
+        position: relative;
+        z-index: 2;
+        background: white;
       }
-      .word--swing span:nth-child(4n + 1) {
-        color: #4ecdc4;
-      }
-      .word--swing span:nth-child(4n + 2) {
-        color: #45b7d1;
-      }
-      .word--swing span:nth-child(4n + 3) {
-        color: #96ceb4;
-      }
-      .background-collage {
+      .banner-background {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         z-index: 1;
-        opacity: 0.25;
-        pointer-events: none;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        opacity: 0.15;
       }
-      .background-collage img {
-        position: absolute;
-        transition: opacity 0.3s ease;
+      .banner-background img {
+        max-width: 300px;
+        height: auto;
+        object-fit: contain;
+        transform: rotate(var(--rotation));
       }
-      /* Landscape images */
-      .background-collage img:nth-child(1) {
-        width: 38%;
-        left: 5%;
-        bottom: 15%;
+      .banner-left,
+      .banner-right {
+        position: fixed;
+        top: 0;
+        width: calc(50% - 250px);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        padding: 20px;
+        z-index: 1;
       }
-      .background-collage img:nth-child(3) {
-        width: 42%;
-        right: 5%;
-        top: 10%;
+      .banner-left {
+        left: 0;
       }
-      /* Portrait/Square images */
-      .background-collage img:nth-child(2) {
-        height: 45%;
-        width: auto;
-        right: 25%;
-        bottom: 5%;
+      .banner-right {
+        right: 0;
       }
-      .background-collage img:nth-child(4) {
-        height: 42%;
-        width: auto;
-        left: 30%;
-        top: 8%;
+      .banner-left img,
+      .banner-right img {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+        transform: rotate(var(--rotation));
       }
       .demos {
         padding: 1em 0;
@@ -139,7 +146,7 @@
         position: absolute;
         top: -2.5em;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) scaleX(-1);
         font-size: 2.5em;
         color: #ff6b6b;
         animation: mega-bounce-glow 1.5s ease-in-out infinite;
@@ -151,12 +158,12 @@
       @keyframes mega-bounce-glow {
         0%,
         100% {
-          transform: translateX(-50%) scale(1) rotate(0deg);
+          transform: translateX(-50%) scaleX(-1) scale(1) rotate(0deg);
           opacity: 0.7;
           filter: brightness(1);
         }
         50% {
-          transform: translateX(-50%) scale(1.5) rotate(15deg);
+          transform: translateX(-50%) scaleX(-1) scale(1.5) rotate(-15deg);
           opacity: 1;
           filter: brightness(1.5);
         }
@@ -184,12 +191,12 @@
         .content--layout {
           padding: 0 1em;
         }
-        .word {
-          font-size: 2em;
+        .game-frame {
+          width: 100% !important;
         }
-        .background-collage img {
-          width: 50% !important;
-          height: auto !important;
+        .banner-left,
+        .banner-right {
+          display: none;
         }
       }
       .top-left-nav {
@@ -211,6 +218,7 @@
       .top-left-nav .nav-arrow {
         top: auto;
         bottom: -2.5em;
+        transform: translateX(-50%) scaleX(-1) !important;
       }
       @media screen and (max-width: 768px) {
         .top-left-nav {
@@ -218,59 +226,23 @@
         }
       }
     </style>
-    <script>
-      document.documentElement.className = "js";
-      var supportsCssVars = function () {
-        var e,
-          t = document.createElement("style");
-        return (
-          (t.innerHTML = "root: { --tmp-var: bold; }"),
-          document.head.appendChild(t),
-          (e = !!(
-            window.CSS &&
-            window.CSS.supports &&
-            window.CSS.supports("font-weight", "var(--tmp-var)")
-          )),
-          t.parentNode.removeChild(t),
-          e
-        );
-      };
-      supportsCssVars() ||
-        alert(
-          "Please view this demo in a modern browser that supports CSS Variables."
-        );
-    </script>
   </head>
-  <body class="demo-swing">
-    <svg class="hidden">
-      <symbol id="icon-arrow" viewBox="0 0 24 24">
-        <title>arrow</title>
-        <polygon
-          points="6.3,12.8 20.9,12.8 20.9,11.2 6.3,11.2 10.2,7.2 9,6 3.1,12 9,18 10.2,16.8 "
-        />
-      </symbol>
-      <symbol id="icon-drop" viewBox="0 0 24 24">
-        <title>drop</title>
-        <path
-          d="M12,21c-3.6,0-6.6-3-6.6-6.6C5.4,11,10.8,4,11.4,3.2C11.6,3.1,11.8,3,12,3s0.4,0.1,0.6,0.3c0.6,0.8,6.1,7.8,6.1,11.2C18.6,18.1,15.6,21,12,21zM12,4.8c-1.8,2.4-5.2,7.4-5.2,9.6c0,2.9,2.3,5.2,5.2,5.2s5.2-2.3,5.2-5.2C17.2,12.2,13.8,7.3,12,4.8z"
-        />
-        <path
-          d="M12,18.2c-0.4,0-0.7-0.3-0.7-0.7s0.3-0.7,0.7-0.7c1.3,0,2.4-1.1,2.4-2.4c0-0.4,0.3-0.7,0.7-0.7c0.4,0,0.7,0.3,0.7,0.7C15.8,16.5,14.1,18.2,12,18.2z"
-        />
-      </symbol>
-      <symbol id="icon-github" viewBox="0 0 32.6 31.8">
-        <title>github</title>
-        <path
-          d="M16.3,0C7.3,0,0,7.3,0,16.3c0,7.2,4.7,13.3,11.1,15.5c0.8,0.1,1.1-0.4,1.1-0.8c0-0.4,0-1.4,0-2.8c-4.5,1-5.5-2.2-5.5-2.2c-0.7-1.9-1.8-2.4-1.8-2.4c-1.5-1,0.1-1,0.1-1c1.6,0.1,2.5,1.7,2.5,1.7c1.5,2.5,3.8,1.8,4.7,1.4c0.1-1.1,0.6-1.8,1-2.2c-3.6-0.4-7.4-1.8-7.4-8.1c0-1.8,0.6-3.2,1.7-4.4C7.4,10.7,6.8,9,7.7,6.8c0,0,1.4-0.4,4.5,1.7c1.3-0.4,2.7-0.5,4.1-0.5c1.4,0,2.8,0.2,4.1,0.5c3.1-2.1,4.5-1.7,4.5-1.7c0.9,2.2,0.3,3.9,0.2,4.3c1,1.1,1.7,2.6,1.7,4.4c0,6.3-3.8,7.6-7.4,8c0.6,0.5,1.1,1.5,1.1,3c0,2.2,0,3.9,0,4.5c0,0.4,0.3,0.9,1.1,0.8c6.5-2.2,11.1-8.3,11.1-15.5C32.6,7.3,25.3,0,16.3,0z"
-        />
-      </symbol>
-    </svg>
+  <body>
     <main>
-      <div class="background-collage">
-        <img src="FUD07.jpeg" alt="" />
-        <img src="FUD08.jpeg" alt="" />
-        <img src="FUD09.jpeg" alt="" />
-        <img src="FUD06.png" alt="" />
+      <div class="top-left-nav">
+        <nav class="demos">
+          <a class="demo" href="index.html"></a>
+          <a class="demo" href="unicorns.html"></a>
+          <a class="demo" href="donald.html"></a>
+          <a class="demo" href="fud.html"></a>
+          <a
+            class="demo demo--current"
+            href="tweet-fighter.html"
+            data-text="GAMES 🎮"
+          ></a>
+          <a class="demo" href="fake-news.html"></a>
+          <span class="nav-arrow">➜</span>
+        </nav>
       </div>
       <div class="content content--fixed">
         <p class="codrops-header__tagline">
@@ -295,15 +267,15 @@
         <nav class="demos">
           <span class="nav-arrow">➜</span>
           <a class="demo" href="index.html"></a>
-          <a class="demo" href="redraw.html"></a>
+          <a class="demo" href="unicorns.html"></a>
+          <a class="demo" href="donald.html"></a>
+          <a class="demo" href="fud.html"></a>
           <a
             class="demo demo--current"
-            href="swing.html"
-            data-text="DONALD 🇺🇸"
+            href="tweet-fighter.html"
+            data-text="GAMES 🎮"
           ></a>
-          <a class="demo" href="crossword.html"></a>
-          <a class="demo" href="games.html"></a>
-          <a class="demo" href="ai-invasion.html"></a>
+          <a class="demo" href="fake-news.html"></a>
         </nav>
         <p class="deco">
           <a href="https://x.com/buythefudcto" target="_blank">$FUD</a>
@@ -312,32 +284,32 @@
         </p>
       </div>
       <section class="content content--layout">
-        <h2 class="word word--swing">
-          FARTS<br />
-          UNICORNS<br />
-          DONALD
-        </h2>
+        <div class="game-container">
+          <div class="banner-left">
+            <img src="FUD01.png" alt="" style="--rotation: -5deg" />
+            <img src="FUD03.png" alt="" style="--rotation: 3deg" />
+            <img src="FUD05.png" alt="" style="--rotation: -4deg" />
+            <img src="FUD07.jpeg" alt="" style="--rotation: 5deg" />
+          </div>
+
+          <iframe
+            src="https://britzl.github.io/TweetFighter/"
+            class="game-frame"
+            frameborder="0"
+          ></iframe>
+
+          <div class="banner-right">
+            <img src="FUD02.png" alt="" style="--rotation: 4deg" />
+            <img src="FUD04.png" alt="" style="--rotation: -3deg" />
+            <img src="FUD06.png" alt="" style="--rotation: 2deg" />
+            <img src="FUD08.jpeg" alt="" style="--rotation: -5deg" />
+          </div>
+        </div>
+        <div class="game-selector">
+          <a href="fake-news.html" class="game-link">Play AI Invasion 🤖</a>
+        </div>
       </section>
-      <div class="top-left-nav">
-        <nav class="demos">
-          <a class="demo" href="index.html"></a>
-          <a class="demo" href="redraw.html"></a>
-          <a
-            class="demo demo--current"
-            href="swing.html"
-            data-text="DONALD 🇺🇸"
-          ></a>
-          <a class="demo" href="crossword.html"></a>
-          <a class="demo" href="games.html"></a>
-          <a class="demo" href="ai-invasion.html"></a>
-          <span class="nav-arrow">➜</span>
-        </nav>
-      </div>
     </main>
-    <script src="js/charming.min.js"></script>
-    <script src="js/anime.min.js"></script>
-    <script src="js/demo.js"></script>
-    <script src="js/demo4.js"></script>
     <script src="js/farts.js"></script>
   </body>
 </html>
