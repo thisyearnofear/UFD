@@ -1,0 +1,405 @@
+@font-face {
+  font-family: "calculator-font";
+  src: url("./calculator-font.woff2") format("woff2"),
+    url("./calculator-font.woff") format("woff"),
+    url("./calculator-font.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #0b0014;
+}
+
+header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr;
+  background-color: #0b0014;
+  height: 15vh;
+  width: 100vw;
+  font-family: Orbitron;
+  padding: 1em;
+}
+
+header div {
+  padding: 1em;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  background-color: inherit;
+  font-size: 3vmin;
+  color: whitesmoke;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-definition {
+  font-size: 2.5vmin;
+  margin-bottom: 1em;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 2em;
+}
+
+#keep,
+#discard {
+  padding: 0.5em 1em;
+  font-size: 2.5vmin;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5em;
+  color: white;
+  text-transform: uppercase;
+  font-family: "Orbitron";
+  min-width: 120px;
+}
+
+#keep {
+  background-color: yellowgreen;
+}
+
+#discard {
+  background-color: red;
+}
+
+#reset-toggle-button {
+  font-size: 4vmin;
+  padding: 0.4em 0.8em;
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  cursor: pointer;
+  font-family: "Orbitron";
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  position: relative;
+  top: -2vh;
+}
+
+#reset-toggle-button:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+main {
+  height: 77vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+main #timer {
+  font-family: calculator-font;
+  color: yellowgreen;
+  font-size: 4vmin;
+}
+
+main section {
+  text-align: center;
+  position: relative;
+  height: 90%;
+  width: 90%;
+  border: 1px #0b0014 solid;
+  background-color: #0b0014;
+  font-size: 5vmin;
+  overflow: hidden;
+}
+
+main section span {
+  font-family: sans-serif;
+  position: absolute;
+  width: max-content;
+  height: max-content;
+  padding: 0.3em 0.6em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+  animation: blink 3.5s infinite;
+  user-select: none;
+  z-index: 10;
+}
+
+main section span:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.jumbotron {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  height: 75vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.jumbotron #logo {
+  height: 30%;
+  width: 40%;
+  background-image: url(https://media.giphy.com/media/10tkf2u5HFDGWk/giphy.gif);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 15px 0;
+}
+
+.jumbotron h2 {
+  font-size: 8vmin;
+  font-family: calculator-font;
+  color: red;
+}
+
+.jumbotron .instructions {
+  font-family: "Orbitron";
+  font-size: 3vmin;
+  padding: 0 5%;
+  color: whitesmoke;
+  line-height: 2.5em;
+}
+
+footer {
+  display: grid;
+  grid-template-columns: 1fr 0.3fr 0.7fr 1fr;
+  grid-template-rows: 1fr;
+  background-color: #0b0014;
+  height: 8vh;
+  width: 100vw;
+}
+
+footer div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: inherit;
+  font-size: 5vmin;
+  font-family: calculator-font;
+  color: whitesmoke;
+}
+
+footer div#player-score {
+  font-size: 6vmin;
+  text-shadow: 0px 0px 50px red;
+}
+
+button,
+input {
+  font-size: 3vmin;
+  border: 0;
+  border-radius: 0;
+  font-family: orbitron;
+  border-radius: 2em;
+}
+
+button:focus,
+input:focus {
+  outline: none;
+}
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 3vmin;
+  padding: 0.4em 0.8em;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  cursor: pointer;
+  font-family: "Orbitron";
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+  #reset-toggle-button {
+    font-size: 5vmin;
+    padding: 0.3em 0.6em;
+  }
+
+  .jumbotron h2 {
+    font-size: 6vmin;
+  }
+
+  .jumbotron .instructions {
+    font-size: 2.5vmin;
+    line-height: 2em;
+  }
+
+  main section {
+    font-size: 4vmin;
+  }
+
+  #keep,
+  #discard {
+    font-size: 2vmin;
+    min-width: 80px;
+  }
+
+  .word-definition {
+    font-size: 2vmin;
+  }
+
+  footer div {
+    font-size: 4vmin;
+  }
+
+  .back-button {
+    font-size: 2.5vmin;
+    padding: 0.3em 0.6em;
+  }
+}
+
+@media screen and (max-480px) {
+  #reset-toggle-button {
+    font-size: 6vmin;
+  }
+
+  .jumbotron h2 {
+    font-size: 5vmin;
+  }
+
+  .jumbotron .instructions {
+    font-size: 2vmin;
+    line-height: 1.8em;
+  }
+
+  main section {
+    font-size: 3.5vmin;
+  }
+
+  #keep,
+  #discard {
+    font-size: 1.8vmin;
+    min-width: 60px;
+  }
+}
+
+@keyframes blink {
+  0% {
+    color: transparent;
+  }
+  10% {
+    color: fuchsia;
+  }
+  20% {
+    color: transparent;
+  }
+  30% {
+    color: #cf0;
+  }
+  40% {
+    color: transparent;
+  }
+  50% {
+    color: red;
+  }
+  60% {
+    color: transparent;
+  }
+  70% {
+    color: #ff8d03;
+  }
+  80% {
+    color: transparent;
+  }
+  90% {
+    color: white;
+  }
+  100% {
+    color: transparent;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0%;
+  }
+  5% {
+    opacity: 10%;
+  }
+  10% {
+    opacity: 20%;
+  }
+  15% {
+    opacity: 30%;
+  }
+  20% {
+    opacity: 40%;
+  }
+  25% {
+    opacity: 50%;
+  }
+  30% {
+    opacity: 60%;
+  }
+  35% {
+    opacity: 70%;
+  }
+  40% {
+    opacity: 80%;
+  }
+  45% {
+    opacity: 90%;
+  }
+  50% {
+    opacity: 100%;
+  }
+  55% {
+    opacity: 90%;
+  }
+  60% {
+    opacity: 80%;
+  }
+  65% {
+    opacity: 70%;
+  }
+  70% {
+    opacity: 60%;
+  }
+  75% {
+    opacity: 50%;
+  }
+  80% {
+    opacity: 40%;
+  }
+  85% {
+    opacity: 30%;
+  }
+  90% {
+    opacity: 20%;
+  }
+  95% {
+    opacity: 10%;
+  }
+  100% {
+    opacity: 0%;
+  }
+}
