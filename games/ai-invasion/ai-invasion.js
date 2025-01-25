@@ -129,14 +129,14 @@ const playGame = () => {
   const wordGenerator = setInterval(generateWord, wordInterval);
   const wordMover = setInterval(moveWords, moveInterval);
 
-  // Clear intervals when game ends
+  // Clear intervals when game ends (30 seconds)
   setTimeout(() => {
     clearInterval(wordGenerator);
     clearInterval(wordMover);
     // Clear all remaining words
     const words = gameBoard.querySelectorAll("span");
     words.forEach((word) => word.remove());
-  }, 71000);
+  }, 30000); // Changed to 30 seconds
 };
 
 /*----------- GLOBAL FUNCTIONS ----------*/
@@ -156,7 +156,7 @@ const toggleReset = () => {
     jumbotron.style.display = "none";
     gameBoard.style.border = "none";
     wordInfo.innerHTML = "";
-    timer.innerHTML = "01:10";
+    timer.innerHTML = "00:30";
     playAudio("anthem.mp3");
     gameBoard.style.backgroundImage =
       "url(https://media.giphy.com/media/l0MYGWqxQUdCONvTq/giphy.gif)";
@@ -246,105 +246,191 @@ const playerScoreEvent = (event) => {
     : `<div>FAKE WORD!!!</div>`;
 };
 
-const timerMechanism = () => {
-  let timeRemaining = 60 * 1.1825;
+// Add new leaderboard functions
+const showLeaderboard = async () => {
+  const leaderboardContainer = document.createElement("div");
+  leaderboardContainer.style.position = "fixed";
+  leaderboardContainer.style.top = "0";
+  leaderboardContainer.style.left = "0";
+  leaderboardContainer.style.width = "100%";
+  leaderboardContainer.style.height = "100%";
+  leaderboardContainer.style.backgroundColor = "rgba(0,0,0,0.8)";
+  leaderboardContainer.style.zIndex = "1000";
+  leaderboardContainer.style.display = "flex";
+  leaderboardContainer.style.justifyContent = "center";
+  leaderboardContainer.style.alignItems = "center";
 
-  const updateTimer = () => {
-    const minutes = String(Math.floor(timeRemaining / 60)).padStart(2, "0");
-    const seconds = String(Math.floor(timeRemaining % 60)).padStart(2, "0");
-    timer.textContent = `${minutes}:${seconds}`;
+  // Try to sign the score if wallet is connected
+  if (window.WalletManager?.provider?.publicKey) {
+    // Show signing message
+    const signingMessage = document.createElement("div");
+    signingMessage.style.position = "fixed";
+    signingMessage.style.top = "20%";
+    signingMessage.style.left = "50%";
+    signingMessage.style.transform = "translateX(-50%)";
+    signingMessage.style.color = "white";
+    signingMessage.style.fontFamily = "'Orbitron', sans-serif";
+    signingMessage.style.textAlign = "center";
+    signingMessage.innerHTML =
+      "Please sign the transaction to add your score to the leaderboard...";
+    document.body.appendChild(signingMessage);
 
-    if (timeRemaining < 30) timer.style.color = "orange";
-    if (timeRemaining < 15) timer.style.color = "red";
-    if (timeRemaining < 10) timer.style.animation = "flash 0.5s infinite";
-    if (timeRemaining < 5) timer.style.animation = "flash 0.125s infinite";
+    const signedData = await window.WalletManager.signScore(playerScore);
+    signingMessage.remove();
 
-    if (--timeRemaining < 0) {
-      clearInterval(timerInterval);
-      timer.textContent = "";
-      gameBoard.innerHTML = "";
+    if (signedData) {
+      const scoreData = {
+        score: playerScore,
+        ...signedData,
+      };
 
-      // Create a container for end game message with higher z-index
-      const endGameMessage = document.createElement("div");
-      endGameMessage.style.position = "fixed";
-      endGameMessage.style.top = "50%";
-      endGameMessage.style.left = "50%";
-      endGameMessage.style.transform = "translate(-50%, -50%)";
-      endGameMessage.style.zIndex = "1000";
-      endGameMessage.style.color = "white";
-      endGameMessage.style.fontSize = "5vmin";
-      endGameMessage.style.textAlign = "center";
-      endGameMessage.style.fontFamily = "Orbitron";
-      endGameMessage.style.textShadow = "2px 2px 4px rgba(0,0,0,0.8)";
-      endGameMessage.style.width = "90%";
-      endGameMessage.style.maxWidth = "600px";
+      // Store in localStorage
+      const scores = JSON.parse(
+        localStorage.getItem("aiInvasionScores") || "[]"
+      );
+      scores.push(scoreData);
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem(
+        "aiInvasionScores",
+        JSON.stringify(scores.slice(0, 100))
+      ); // Keep top 100
+    }
+  }
 
-      const message =
-        playerScore <= 35
-          ? `GAME OVER.<br>YOU LOSE!<br><br>35 points needed to win.<br><br>Score: ${playerScore}<br><br>Try again?`
-          : `WELL DONE!<br>YOU WIN!<br><br>Final Score: ${playerScore}`;
+  // Get player's rank
+  const scores = JSON.parse(localStorage.getItem("aiInvasionScores") || "[]");
+  const playerRank =
+    scores.findIndex(
+      (score) =>
+        score.publicKey ===
+        window.WalletManager?.provider?.publicKey?.toString()
+    ) + 1;
+  const top10 = scores.slice(0, 10);
 
-      const tweetText =
-        playerScore <= 35
-          ? `I scored ${playerScore} points fighting FAKE NEWS in the FUD game! Can you do better? 🎮\n\n@buythefudcto\n$FUD: 9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://www.fartsunicornsdonald.com`
-          : `I just WON the FUD game with ${playerScore} points! 🏆\n\n@buythefudcto\n$FUD: 9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://www.fartsunicornsdonald.com`;
+  // Create tweet text based on score
+  const tweetText =
+    playerScore >= 35
+      ? `I just scored ${playerScore} points (Rank #${playerRank}) fighting FAKE NEWS in the FUD game! 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://fartsunicornsdonald.com`
+      : `Fake news got me! Only ${playerScore} points (Rank #${playerRank}) in the FUD game! Can you do better? 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay at https://fartsunicornsdonald.com`;
 
-      const shareButton = `
+  const leaderboardHTML = `
+    <div class="leaderboard" style="
+      background: rgba(0,0,0,0.95);
+      padding: 30px;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      min-width: 350px;
+      max-width: 90%;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    ">
+      <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Top Scores</h2>
+      ${top10
+        .map(
+          (score, i) => `
+        <div class="score-entry ${
+          score.publicKey ===
+          window.WalletManager?.provider?.publicKey?.toString()
+            ? "current-player"
+            : ""
+        }" 
+             style="
+               margin: 10px 0;
+               padding: 12px;
+               display: flex;
+               justify-content: space-between;
+               ${
+                 score.publicKey ===
+                 window.WalletManager?.provider?.publicKey?.toString()
+                   ? "background: rgba(255,255,255,0.1); border-radius: 8px;"
+                   : ""
+               }
+               align-items: center;
+             ">
+          <span style="font-weight: bold; min-width: 30px;">#${i + 1}</span>
+          <span style="flex-grow: 1; text-align: center;">${score.score}</span>
+          <span style="font-family: monospace; opacity: 0.8;">${score.publicKey.slice(
+            0,
+            4
+          )}...${score.publicKey.slice(-4)}</span>
+        </div>
+      `
+        )
+        .join("")}
+      
+      <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
         <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(
           tweetText
         )}"
            target="_blank"
-           class="twitter-share-button">
+           style="
+             background: #1DA1F2;
+             color: white;
+             padding: 12px;
+             border-radius: 8px;
+             text-decoration: none;
+             text-align: center;
+             font-weight: bold;
+             transition: all 0.3s ease;
+           "
+           onmouseover="this.style.transform='scale(1.02)'"
+           onmouseout="this.style.transform='scale(1)'">
           Share on Twitter 🐦
         </a>
-      `;
-
-      endGameMessage.innerHTML = `${message}<br><br>${shareButton}`;
-
-      // Add styles for the share button
-      const style = document.createElement("style");
-      style.textContent = `
-        .twitter-share-button {
-          display: inline-block;
-          background: #1DA1F2;
-          color: white;
-          padding: 0.8em 1.5em;
-          border-radius: 30px;
-          text-decoration: none;
-          font-size: 0.8em;
-          margin-top: 1em;
-          transition: all 0.3s ease;
-        }
         
-        .twitter-share-button:hover {
-          background: #0c85d0;
-          transform: scale(1.05);
-        }
-        
-        @media (max-width: 768px) {
-          .twitter-share-button {
-            padding: 0.6em 1.2em;
-            font-size: 0.7em;
-          }
-        }
-      `;
-      document.head.appendChild(style);
+        <button onclick="closeLeaderboard()" 
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  background: rgba(255,255,255,0.1);
+                  border: 1px solid rgba(255,255,255,0.2);
+                  color: white;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-family: 'Orbitron', sans-serif;
+                  transition: all 0.3s ease;
+                "
+                onmouseover="this.style.background='rgba(255,255,255,0.2)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
 
-      gameBoard.appendChild(endGameMessage);
-      wordInfo.innerHTML = "";
+  leaderboardContainer.innerHTML = leaderboardHTML;
+  document.body.appendChild(leaderboardContainer);
+};
 
-      if (playerScore <= 35) {
-        gameBoard.style.backgroundImage =
-          "url(https://media.giphy.com/media/l49JFunqyrbTPSfIY/giphy.gif)";
-      } else {
-        gameBoard.style.backgroundImage =
-          "url(https://media.giphy.com/media/OlSUgQk2sIlTW/giphy.gif)";
-      }
+// Add close leaderboard function to window scope
+window.closeLeaderboard = () => {
+  document.querySelector(".leaderboard")?.remove();
+};
+
+// Modify timerMechanism to show leaderboard when game ends
+const timerMechanism = () => {
+  let timeRemaining = 30; // 30 seconds total
+
+  const countdown = setInterval(() => {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    timer.innerHTML = `${String(minutes).padStart(2, "0")}:${String(
+      seconds
+    ).padStart(2, "0")}`;
+
+    if (timeRemaining <= 0) {
+      clearInterval(countdown);
+      // Show game over message
+      wordInfo.innerHTML = `<div style="text-align: center;">
+        <h2>GAME OVER!</h2>
+        <p>Final Score: ${playerScore}</p>
+      </div>`;
+
+      // Show leaderboard after a short delay
+      setTimeout(showLeaderboard, 1000);
     }
-  };
-
-  const timerInterval = setInterval(updateTimer, 1000);
-  updateTimer();
+    timeRemaining--;
+  }, 1000);
 };
 
 /*----------- ------------------------------------------------------------------------------------------------------------*/

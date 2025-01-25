@@ -33,6 +33,30 @@
         transform: translateX(-2px);
       }
 
+      .wallet-button {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Orbitron", sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .wallet-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .wallet-address {
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        font-family: monospace;
+      }
+
       @media screen and (max-width: 768px) {
         .back-button {
           font-size: 0.9em;
@@ -43,6 +67,36 @@
   </head>
   <body>
     <a href="unicorns.html" class="back-button">← Back</a>
+
+    <!-- Add wallet container -->
+    <div
+      id="wallet-container"
+      style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+      "
+    >
+      <button id="wallet-connect" class="wallet-button">Connect Wallet</button>
+      <button
+        id="wallet-disconnect"
+        class="wallet-button"
+        style="display: none"
+      >
+        Disconnect
+      </button>
+      <div
+        id="wallet-address"
+        class="wallet-address"
+        style="display: none"
+      ></div>
+    </div>
+
     <header>
       <div></div>
       <div id="word-info"></div>
@@ -70,6 +124,33 @@
       <div>SCORE:</div>
       <div id="player-score">0</div>
     </footer>
+
+    <!-- Add Solana Web3 -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+    <!-- Add our wallet manager -->
+    <script src="games/ai-invasion/wallet-manager.js"></script>
+
+    <!-- Initialize wallet manager -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        WalletManager.initialize();
+
+        // Add event listeners
+        document
+          .getElementById("wallet-connect")
+          .addEventListener("click", () => {
+            WalletManager.connect().catch(console.error);
+          });
+
+        document
+          .getElementById("wallet-disconnect")
+          .addEventListener("click", () => {
+            WalletManager.disconnect().catch(console.error);
+          });
+      });
+    </script>
+
     <script type="module" src="games/ai-invasion/ai-invasion.js"></script>
   </body>
 </html>
