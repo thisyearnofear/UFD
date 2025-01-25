@@ -276,19 +276,70 @@ const timerMechanism = () => {
       endGameMessage.style.textAlign = "center";
       endGameMessage.style.fontFamily = "Orbitron";
       endGameMessage.style.textShadow = "2px 2px 4px rgba(0,0,0,0.8)";
+      endGameMessage.style.width = "90%";
+      endGameMessage.style.maxWidth = "600px";
+
+      const message =
+        playerScore <= 35
+          ? `GAME OVER.<br>YOU LOSE!<br><br>35 points needed to win.<br><br>Score: ${playerScore}<br><br>Try again?`
+          : `WELL DONE!<br>YOU WIN!<br><br>Final Score: ${playerScore}`;
+
+      const tweetText =
+        playerScore <= 35
+          ? `I scored ${playerScore} points fighting FAKE NEWS in the FUD game! Can you do better? 🎮\n\n@buythefudcto\n$FUD: 9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://www.fartsunicornsdonald.com`
+          : `I just WON the FUD game with ${playerScore} points! 🏆\n\n@buythefudcto\n$FUD: 9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://www.fartsunicornsdonald.com`;
+
+      const shareButton = `
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          tweetText
+        )}"
+           target="_blank"
+           class="twitter-share-button">
+          Share on Twitter 🐦
+        </a>
+      `;
+
+      endGameMessage.innerHTML = `${message}<br><br>${shareButton}`;
+
+      // Add styles for the share button
+      const style = document.createElement("style");
+      style.textContent = `
+        .twitter-share-button {
+          display: inline-block;
+          background: #1DA1F2;
+          color: white;
+          padding: 0.8em 1.5em;
+          border-radius: 30px;
+          text-decoration: none;
+          font-size: 0.8em;
+          margin-top: 1em;
+          transition: all 0.3s ease;
+        }
+        
+        .twitter-share-button:hover {
+          background: #0c85d0;
+          transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+          .twitter-share-button {
+            padding: 0.6em 1.2em;
+            font-size: 0.7em;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      gameBoard.appendChild(endGameMessage);
+      wordInfo.innerHTML = "";
 
       if (playerScore <= 35) {
         gameBoard.style.backgroundImage =
           "url(https://media.giphy.com/media/l49JFunqyrbTPSfIY/giphy.gif)";
-        endGameMessage.innerHTML = `GAME OVER.<br>YOU LOSE!<br><br>35 points needed to win.<br><br>Try again?`;
       } else {
         gameBoard.style.backgroundImage =
           "url(https://media.giphy.com/media/OlSUgQk2sIlTW/giphy.gif)";
-        endGameMessage.innerHTML = `WELL DONE!<br>YOU WIN!`;
       }
-
-      gameBoard.appendChild(endGameMessage);
-      wordInfo.innerHTML = "";
     }
   };
 
