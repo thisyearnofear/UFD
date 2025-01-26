@@ -18,14 +18,19 @@ html {
 }
 
 header {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: 1fr;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
   background-color: #0b0014;
   height: 15vh;
   width: 100vw;
   font-family: Orbitron;
-  padding: 1em;
 }
 
 header div {
@@ -48,8 +53,9 @@ header div {
 
 .button-container {
   display: flex;
-  justify-content: space-between;
-  gap: 2em;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 #keep,
@@ -103,9 +109,22 @@ main {
 }
 
 main #timer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -300%);
   font-family: calculator-font;
-  color: yellowgreen;
   font-size: 4vmin;
+  padding: 0.3em 0.8em;
+  border-radius: 1em;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  animation: pulse 2s infinite;
+  color: #32cd32 !important;
+  text-shadow: 0 0 10px #32cd32 !important;
+  mix-blend-mode: normal;
+  opacity: 1;
 }
 
 main section {
@@ -120,28 +139,401 @@ main section {
 }
 
 main section span {
-  font-family: sans-serif;
   position: absolute;
-  width: max-content;
-  height: max-content;
-  padding: 0.3em 0.6em;
-  border-radius: 0.5em;
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.5rem;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: background-color 0.2s ease;
-  animation: blink 3.5s infinite;
+  padding: 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  transition: transform 0.2s ease;
   user-select: none;
-  z-index: 10;
 }
 
 main section span:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .jumbotron {
   position: fixed;
-  top: 5%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 30px;
+  border-radius: 12px;
+  z-index: 1000;
+}
+
+.jumbotron h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.jumbotron .instructions {
+  font-size: 3vmin;
+  padding: 0 5%;
+  color: whitesmoke;
+  line-height: 2.5em;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
   left: 0;
+  right: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  z-index: 100;
+}
+
+footer div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: inherit;
+  font-size: 5vmin;
+  font-family: calculator-font;
+  color: whitesmoke;
+}
+
+footer div#player-score {
+  font-size: 6vmin;
+  text-shadow: 0px 0px 50px red;
+}
+
+button,
+input {
+  font-size: 3vmin;
+  border: 0;
+  border-radius: 0;
+  font-family: orbitron;
+  border-radius: 2em;
+}
+
+button:focus,
+input:focus {
+  outline: none;
+}
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 3vmin;
+  padding: 0.4em 0.8em;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  cursor: pointer;
+  font-family: "Orbitron";
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+  #reset-toggle-button {
+    font-size: 5vmin;
+    padding: 0.3em 0.6em;
+  }
+
+  .jumbotron h2 {
+    font-size: 2rem;
+  }
+
+  .jumbotron .instructions {
+    font-size: 0.9rem;
+  }
+
+  main section {
+    font-size: 4vmin;
+  }
+
+  #keep,
+  #discard {
+    font-size: 2vmin;
+    min-width: 80px;
+  }
+
+  .word-definition {
+    font-size: 2vmin;
+  }
+
+  footer div {
+    font-size: 4vmin;
+  }
+
+  .back-button {
+    font-size: 2.5vmin;
+    padding: 0.3em 0.6em;
+  }
+
+  .game-board span {
+    font-size: 1.2rem;
+    padding: 8px;
+  }
+
+  #timer {
+    font-size: 1.5rem;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  #word-info {
+    font-size: 0.9rem;
+    padding: 8px;
+    max-width: 90%;
+  }
+
+  .jumbotron {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .leaderboard {
+    width: 90% !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+  }
+
+  .score-entry {
+    font-size: 0.9rem !important;
+  }
+
+  .game-board span {
+    min-width: 60px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  #wallet-container {
+    transform: scale(0.9);
+    transform-origin: top right;
+  }
+}
+
+@media screen and (max-480px) {
+  #reset-toggle-button {
+    font-size: 6vmin;
+  }
+
+  .jumbotron h2 {
+    font-size: 5vmin;
+  }
+
+  .jumbotron .instructions {
+    font-size: 2vmin;
+    line-height: 1.8em;
+  }
+
+  main section {
+    font-size: 3.5vmin;
+  }
+
+  #keep,
+  #discard {
+    font-size: 1.8vmin;
+    min-width: 60px;
+  }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .game-board {
+    height: 80vh;
+  }
+
+  #timer {
+    top: 10px;
+    font-size: 1.2rem;
+  }
+
+  .jumbotron {
+    padding: 15px;
+  }
+
+  .jumbotron h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  footer {
+    padding: 5px;
+  }
+}
+
+@keyframes blink {
+  0% {
+    color: transparent;
+  }
+  10% {
+    color: fuchsia;
+  }
+  20% {
+    color: transparent;
+  }
+  30% {
+    color: #cf0;
+  }
+  40% {
+    color: transparent;
+  }
+  50% {
+    color: red;
+  }
+  60% {
+    color: transparent;
+  }
+  70% {
+    color: #ff8d03;
+  }
+  80% {
+    color: transparent;
+  }
+  90% {
+    color: white;
+  }
+  100% {
+    color: transparent;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0%;
+  }
+  5% {
+    opacity: 10%;
+  }
+  10% {
+    opacity: 20%;
+  }
+  15% {
+    opacity: 30%;
+  }
+  20% {
+    opacity: 40%;
+  }
+  25% {
+    opacity: 50%;
+  }
+  30% {
+    opacity: 60%;
+  }
+  35% {
+    opacity: 70%;
+  }
+  40% {
+    opacity: 80%;
+  }
+  45% {
+    opacity: 90%;
+  }
+  50% {
+    opacity: 100%;
+  }
+  55% {
+    opacity: 90%;
+  }
+  60% {
+    opacity: 80%;
+  }
+  65% {
+    opacity: 70%;
+  }
+  70% {
+    opacity: 60%;
+  }
+  75% {
+    opacity: 50%;
+  }
+  80% {
+    opacity: 40%;
+  }
+  85% {
+    opacity: 30%;
+  }
+  90% {
+    opacity: 20%;
+  }
+  95% {
+    opacity: 10%;
+  }
+  100% {
+    opacity: 0%;
+  }
+}
+
+/* Base styles */
+.game-board {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: black;
+  cursor: crosshair;
+}
+
+#word-info {
+  color: white;
+  font-family: "Orbitron", sans-serif;
+  text-align: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+/* Button styles */
+button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Jumbotron styles */
+.jumbotron {
+  position: fixed;
+
   height: 75vh;
   width: 100vw;
   display: flex;
@@ -180,7 +572,6 @@ footer {
   grid-template-columns: 1fr 0.3fr 0.7fr 1fr;
   grid-template-rows: 1fr;
   background-color: #0b0014;
-  height: 8vh;
   width: 100vw;
 }
 
@@ -401,5 +792,50 @@ input:focus {
   }
   100% {
     opacity: 0%;
+  }
+}
+
+/* Timer states - these will be added via JavaScript */
+main #timer.timer-normal {
+  color: #32cd32 !important;
+  text-shadow: 0 0 10px #32cd32 !important;
+}
+
+main #timer.timer-warning {
+  color: #ffd700 !important;
+  text-shadow: 0 0 10px #ffd700 !important;
+}
+
+main #timer.timer-danger {
+  color: #ff4136 !important;
+  text-shadow: 0 0 10px #ff4136 !important;
+  animation: pulse-danger 1s infinite;
+}
+
+/* Timer animations */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -300%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -300%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -300%) scale(1);
+  }
+}
+
+@keyframes pulse-danger {
+  0% {
+    transform: translate(-50%, -300%) scale(1);
+    text-shadow: 0 0 10px #ff4136;
+  }
+  50% {
+    transform: translate(-50%, -300%) scale(1.2);
+    text-shadow: 0 0 20px #ff4136;
+  }
+  100% {
+    transform: translate(-50%, -300%) scale(1);
+    text-shadow: 0 0 10px #ff4136;
   }
 }

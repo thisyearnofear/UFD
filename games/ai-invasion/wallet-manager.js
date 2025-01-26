@@ -1,5 +1,7 @@
 const WalletManager = {
   provider: null,
+  rpcEndpoint:
+    "https://frequent-withered-surf.solana-mainnet.quiknode.pro/c980208c0896a2be88b9ea59315aa350d415d4f1",
 
   // Check if Phantom is installed
   getProvider() {
@@ -89,8 +91,61 @@ const WalletManager = {
     }
   },
 
+  // Resolve domain name for a wallet using Bonfida SDK proxy
+  async resolveDomain(publicKey) {
+    try {
+      console.log("🔍 Attempting to resolve domain for:", publicKey);
+
+      // Check cache first
+      const cachedDomain = localStorage.getItem(`domain_${publicKey}`);
+      if (cachedDomain) {
+        console.log("✅ Found domain in cache:", cachedDomain);
+        return cachedDomain;
+      }
+
+      // If not in cache, fetch from API
+      const response = await fetch(
+        `https://sns-sdk-proxy.bonfida.workers.dev/domains/${publicKey}`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("📡 API response:", data);
+
+      if (
+        data.s === "ok" &&
+        Array.isArray(data.result) &&
+        data.result.length > 0
+      ) {
+        const domainData = data.result[0];
+        const domain = `${domainData.domain}.sol`;
+        console.log("✅ Found domain:", domain);
+
+        // Cache the result
+        localStorage.setItem(`domain_${publicKey}`, domain);
+
+        return domain;
+      }
+
+      // Cache null result to avoid repeated lookups
+      localStorage.setItem(`domain_${publicKey}`, "");
+      return null;
+    } catch (err) {
+      console.error("❌ Error resolving domain:", err);
+      return null;
+    }
+  },
+
   // Update UI elements
-  updateUI(publicKey) {
+  async updateUI(publicKey) {
     const connectBtn = document.getElementById("wallet-connect");
     const disconnectBtn = document.getElementById("wallet-disconnect");
     const addressDisplay = document.getElementById("wallet-address");
@@ -100,9 +155,21 @@ const WalletManager = {
       connectBtn.style.display = "none";
       disconnectBtn.style.display = "block";
       addressDisplay.style.display = "block";
-      addressDisplay.textContent = `${address.slice(0, 4)}...${address.slice(
-        -4
-      )}`;
+
+      // Show loading state
+      addressDisplay.textContent = "Loading...";
+
+      // Try to resolve domain
+      const domain = await this.resolveDomain(address);
+
+      // Update display with domain or shortened address
+      if (domain) {
+        addressDisplay.innerHTML = `<span style="color: #1DA1F2">${domain}</span>`;
+      } else {
+        addressDisplay.textContent = `${address.slice(0, 4)}...${address.slice(
+          -4
+        )}`;
+      }
     } else {
       connectBtn.style.display = "block";
       disconnectBtn.style.display = "none";
@@ -113,3 +180,31 @@ const WalletManager = {
 
 // Export for use in other modules
 window.WalletManager = WalletManager;
+
+// Initialize WalletManager and export ready promise
+window.walletManagerReady = (async () => {
+  try {
+    console.log("🚀 Initializing WalletManager...");
+    // Wait for DOM to be ready
+    if (document.readyState === "loading") {
+      await new Promise((resolve) =>
+        document.addEventListener("DOMContentLoaded", resolve)
+      );
+    }
+
+    // Initialize WalletManager
+    WalletManager.initialize();
+
+    console.log(
+      "✅ WalletManager initialized with methods:",
+      Object.keys(WalletManager)
+    );
+    console.log("✅ resolveDomain method:", WalletManager.resolveDomain);
+
+    // Return the initialized WalletManager
+    return WalletManager;
+  } catch (err) {
+    console.error("❌ Error initializing WalletManager:", err);
+    throw err;
+  }
+})();

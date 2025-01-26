@@ -248,136 +248,190 @@ const playerScoreEvent = (event) => {
 
 // Add new leaderboard functions
 const showLeaderboard = async () => {
-  const leaderboardContainer = document.createElement("div");
-  leaderboardContainer.style.position = "fixed";
-  leaderboardContainer.style.top = "0";
-  leaderboardContainer.style.left = "0";
-  leaderboardContainer.style.width = "100%";
-  leaderboardContainer.style.height = "100%";
-  leaderboardContainer.style.backgroundColor = "rgba(0,0,0,0.8)";
-  leaderboardContainer.style.zIndex = "1000";
-  leaderboardContainer.style.display = "flex";
-  leaderboardContainer.style.justifyContent = "center";
-  leaderboardContainer.style.alignItems = "center";
+  try {
+    const leaderboardContainer = document.createElement("div");
+    leaderboardContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+    `;
 
-  // Try to sign the score if wallet is connected
-  if (window.WalletManager?.provider?.publicKey) {
-    // Show signing message
-    const signingMessage = document.createElement("div");
-    signingMessage.style.position = "fixed";
-    signingMessage.style.top = "20%";
-    signingMessage.style.left = "50%";
-    signingMessage.style.transform = "translateX(-50%)";
-    signingMessage.style.color = "white";
-    signingMessage.style.fontFamily = "'Orbitron', sans-serif";
-    signingMessage.style.textAlign = "center";
-    signingMessage.innerHTML =
-      "Please sign the transaction to add your score to the leaderboard...";
-    document.body.appendChild(signingMessage);
+    // Get scores from localStorage
+    const scores = JSON.parse(localStorage.getItem("aiInvasionScores") || "[]");
+    const top10 = scores.slice(0, 10);
 
-    const signedData = await window.WalletManager.signScore(playerScore);
-    signingMessage.remove();
+    // Try to sign the score if wallet is connected
+    const currentWalletAddress =
+      window.WalletManager?.provider?.publicKey?.toString();
+    if (currentWalletAddress) {
+      try {
+        const signedData = await window.WalletManager.signScore(playerScore);
+        if (signedData) {
+          const scoreData = {
+            score: playerScore,
+            ...signedData,
+          };
 
-    if (signedData) {
-      const scoreData = {
-        score: playerScore,
-        ...signedData,
-      };
-
-      // Store in localStorage
-      const scores = JSON.parse(
-        localStorage.getItem("aiInvasionScores") || "[]"
-      );
-      scores.push(scoreData);
-      scores.sort((a, b) => b.score - a.score);
-      localStorage.setItem(
-        "aiInvasionScores",
-        JSON.stringify(scores.slice(0, 100))
-      ); // Keep top 100
+          scores.push(scoreData);
+          scores.sort((a, b) => b.score - a.score);
+          localStorage.setItem(
+            "aiInvasionScores",
+            JSON.stringify(scores.slice(0, 100))
+          ); // Keep top 100
+        }
+      } catch (err) {
+        console.error("❌ Error signing score:", err);
+      }
     }
-  }
 
-  // Get player's rank
-  const scores = JSON.parse(localStorage.getItem("aiInvasionScores") || "[]");
-  const playerRank =
-    scores.findIndex(
-      (score) =>
-        score.publicKey ===
-        window.WalletManager?.provider?.publicKey?.toString()
-    ) + 1;
-  const top10 = scores.slice(0, 10);
+    const playerRank =
+      scores.findIndex((score) => score.publicKey === currentWalletAddress) + 1;
 
-  // Create tweet text based on score
-  const tweetText =
-    playerScore >= 35
-      ? `I just scored ${playerScore} points (Rank #${playerRank}) fighting FAKE NEWS in the FUD game! 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://fartsunicornsdonald.com`
-      : `Fake news got me! Only ${playerScore} points (Rank #${playerRank}) in the FUD game! Can you do better? 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay at https://fartsunicornsdonald.com`;
+    // Create tweet text based on score
+    const tweetText =
+      playerScore >= 35
+        ? `I just scored ${playerScore} points (Rank #${playerRank}) fighting FAKE NEWS in the FUD game! 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay now at https://fartsunicornsdonald.com`
+        : `Fake news got me! Only ${playerScore} points (Rank #${playerRank}) in the FUD game! Can you do better? 🎮\n\n@buythefudcto\n9w1NDpXVbhZwjjD93rJeT126MPgETkkgVsMYNwH6pump\n\nPlay at https://fartsunicornsdonald.com`;
 
-  const leaderboardHTML = `
-    <div class="leaderboard" style="
-      background: rgba(0,0,0,0.95);
-      padding: 30px;
-      border-radius: 12px;
-      color: white;
-      font-family: 'Orbitron', sans-serif;
-      min-width: 350px;
-      max-width: 90%;
-      box-shadow: 0 0 20px rgba(255,255,255,0.1);
-    ">
-      <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Top Scores</h2>
-      ${top10
-        .map(
-          (score, i) => `
-        <div class="score-entry ${
-          score.publicKey ===
-          window.WalletManager?.provider?.publicKey?.toString()
-            ? "current-player"
-            : ""
-        }" 
-             style="
-               margin: 10px 0;
-               padding: 12px;
-               display: flex;
-               justify-content: space-between;
-               ${
-                 score.publicKey ===
-                 window.WalletManager?.provider?.publicKey?.toString()
-                   ? "background: rgba(255,255,255,0.1); border-radius: 8px;"
-                   : ""
-               }
-               align-items: center;
-             ">
-          <span style="font-weight: bold; min-width: 30px;">#${i + 1}</span>
-          <span style="flex-grow: 1; text-align: center;">${score.score}</span>
-          <span style="font-family: monospace; opacity: 0.8;">${score.publicKey.slice(
-            0,
-            4
-          )}...${score.publicKey.slice(-4)}</span>
-        </div>
-      `
-        )
-        .join("")}
-      
-      <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          tweetText
-        )}"
-           target="_blank"
-           style="
-             background: #1DA1F2;
-             color: white;
-             padding: 12px;
-             border-radius: 8px;
-             text-decoration: none;
-             text-align: center;
-             font-weight: bold;
-             transition: all 0.3s ease;
-           "
-           onmouseover="this.style.transform='scale(1.02)'"
-           onmouseout="this.style.transform='scale(1)'">
-          Share on Twitter 🐦
-        </a>
+    const leaderboardHTML = `
+      <div class="leaderboard" style="
+        background: rgba(0,0,0,0.95);
+        padding: 30px;
+        border-radius: 12px;
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        min-width: 350px;
+        max-width: 90%;
+        box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      ">
+        <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Top Scores</h2>
+        ${top10
+          .map(
+            (score, i) => `
+          <div class="score-entry ${
+            score.publicKey === currentWalletAddress ? "current-player" : ""
+          }" 
+               style="
+                 margin: 10px 0;
+                 padding: 12px;
+                 display: flex;
+                 justify-content: space-between;
+                 ${
+                   score.publicKey === currentWalletAddress
+                     ? "background: rgba(255,255,255,0.1); border-radius: 8px;"
+                     : ""
+                 }
+                 align-items: center;
+               ">
+            <span style="font-weight: bold; min-width: 30px;">#${i + 1}</span>
+            <span style="flex-grow: 1; text-align: center;">${
+              score.score
+            }</span>
+            <span style="font-family: monospace; opacity: 0.8;">
+              ${score.publicKey.slice(0, 4)}...${score.publicKey.slice(-4)}
+            </span>
+            ${
+              score.publicKey === currentWalletAddress
+                ? `
+              <button onclick="verifyIdentity('${score.publicKey}')"
+                      style="
+                        margin-left: 10px;
+                        padding: 4px 8px;
+                        background: #1DA1F2;
+                        border: none;
+                        color: white;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 12px;
+                      ">
+                Verify Identity
+              </button>
+            `
+                : ""
+            }
+          </div>
+        `
+          )
+          .join("")}
         
+        <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            tweetText
+          )}"
+             target="_blank"
+             style="
+               background: #1DA1F2;
+               color: white;
+               padding: 12px;
+               border-radius: 8px;
+               text-decoration: none;
+               text-align: center;
+               font-weight: bold;
+               transition: all 0.3s ease;
+             "
+             onmouseover="this.style.transform='scale(1.02)'"
+             onmouseout="this.style.transform='scale(1)'">
+            Share on Twitter 🐦
+          </a>
+          
+          <button onclick="closeLeaderboard()" 
+                  style="
+                    width: 100%;
+                    padding: 12px;
+                    background: rgba(255,255,255,0.1);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    color: white;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-family: 'Orbitron', sans-serif;
+                    transition: all 0.3s ease;
+                  "
+                  onmouseover="this.style.background='rgba(255,255,255,0.2)'"
+                  onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+            Close
+          </button>
+        </div>
+      </div>
+    `;
+
+    leaderboardContainer.innerHTML = leaderboardHTML;
+    document.body.appendChild(leaderboardContainer);
+  } catch (err) {
+    console.error("❌ Error showing leaderboard:", err);
+    // Show error state in leaderboard
+    const leaderboardContainer = document.createElement("div");
+    leaderboardContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+    `;
+    leaderboardContainer.innerHTML = `
+      <div class="leaderboard" style="
+        background: rgba(0,0,0,0.95);
+        padding: 30px;
+        border-radius: 12px;
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        min-width: 350px;
+        max-width: 90%;
+        box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      ">
+        <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Error Loading Leaderboard</h2>
+        <p style="text-align: center; color: #ff4444;">Please try again later.</p>
         <button onclick="closeLeaderboard()" 
                 style="
                   width: 100%;
@@ -388,23 +442,86 @@ const showLeaderboard = async () => {
                   border-radius: 8px;
                   cursor: pointer;
                   font-family: 'Orbitron', sans-serif;
-                  transition: all 0.3s ease;
+                  margin-top: 20px;
                 "
                 onmouseover="this.style.background='rgba(255,255,255,0.2)'"
                 onmouseout="this.style.background='rgba(255,255,255,0.1)'">
           Close
         </button>
       </div>
-    </div>
-  `;
+    `;
+    document.body.appendChild(leaderboardContainer);
+  }
+};
 
-  leaderboardContainer.innerHTML = leaderboardHTML;
-  document.body.appendChild(leaderboardContainer);
+// Add verify identity function
+window.verifyIdentity = async (publicKey) => {
+  try {
+    console.log("🔍 Attempting to resolve domain for:", publicKey);
+
+    const response = await fetch(
+      `https://sns-sdk-proxy.bonfida.workers.dev/domains/${publicKey}`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("📡 API response:", data);
+
+    if (
+      data.s === "ok" &&
+      Array.isArray(data.result) &&
+      data.result.length > 0
+    ) {
+      const domainData = data.result[0];
+      console.log("🔑 Found domain data:", domainData);
+
+      const domain = `${domainData.domain}.sol`;
+      console.log("✅ Using domain:", domain);
+
+      // Update the display
+      const scoreEntries = document.querySelectorAll(".score-entry");
+      for (const entry of scoreEntries) {
+        const addressSpan = entry.querySelector(
+          'span[style*="font-family: monospace"]'
+        );
+        if (
+          addressSpan &&
+          addressSpan.textContent.includes(publicKey.slice(0, 4))
+        ) {
+          addressSpan.innerHTML = `<span style="color: #1DA1F2">${domain}</span>`;
+          // Hide the verify button
+          const verifyButton = entry.querySelector("button");
+          if (verifyButton) {
+            verifyButton.style.display = "none";
+          }
+          break;
+        }
+      }
+    } else {
+      console.log("❌ No domains found");
+      alert("No .sol domains found for this wallet");
+    }
+  } catch (err) {
+    console.error("❌ Error verifying identity:", err);
+    alert(`Error resolving domain: ${err.message}`);
+  }
 };
 
 // Add close leaderboard function to window scope
 window.closeLeaderboard = () => {
-  document.querySelector(".leaderboard")?.remove();
+  const leaderboardContainer =
+    document.querySelector(".leaderboard")?.parentElement;
+  if (leaderboardContainer) {
+    leaderboardContainer.remove();
+  }
 };
 
 // Modify timerMechanism to show leaderboard when game ends

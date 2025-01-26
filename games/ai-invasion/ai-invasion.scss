@@ -27,15 +27,21 @@ header {
   height: 15vh;
   width: 100vw;
   font-family: Orbitron;
+  position: relative;
+  z-index: 200;
 
   #discard {
     background-color: red;
     animation: flash 0.125s 2;
+    position: relative;
+    z-index: 250;
   }
 
   #keep {
     background-color: yellowgreen;
     animation: flash 0.125s 2;
+    position: relative;
+    z-index: 250;
   }
 
   div {
@@ -43,10 +49,19 @@ header {
     text-align: center;
     height: 100%;
     width: 100%;
-    background-color: inhert;
-
+    background-color: inherit;
     font-size: 3vmin;
     color: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .button-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    z-index: 250;
   }
 }
 
@@ -57,11 +72,16 @@ main {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  position: relative;
+  z-index: 100;
 
   #timer {
     font-family: calculator-font;
     color: yellowgreen;
     font-size: 4vmin;
+    position: absolute;
+    top: 2vh;
+    z-index: 150;
   }
 
   section {
@@ -72,6 +92,7 @@ main {
     border: 1px #0b0014 solid;
     background-color: #0b0014;
     font-size: 7vmin;
+    z-index: 100;
 
     span {
       font-family: sans-serif;
@@ -81,14 +102,16 @@ main {
       font-size: unset;
       border-radius: 3em;
       animation: blink 3.5s infinite;
+      z-index: 200;
     }
   }
 }
 
 .jumbotron {
   position: fixed;
-  top: 5%;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   height: 75vh;
   width: 100vw;
   display: flex;
@@ -96,6 +119,7 @@ main {
   justify-content: center;
   align-items: center;
   text-align: center;
+  z-index: 100;
 
   #logo {
     height: 30%;
