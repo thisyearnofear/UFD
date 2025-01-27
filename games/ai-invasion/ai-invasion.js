@@ -248,51 +248,55 @@ const playerScoreEvent = (event) => {
 
 // Add new leaderboard functions
 const showLeaderboard = async () => {
+  const leaderboardContainer = document.createElement("div");
+  leaderboardContainer.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+  `;
+
   try {
-    const leaderboardContainer = document.createElement("div");
-    leaderboardContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
-    `;
+    // Always save score locally first
+    LeaderboardService.addLocalScore(playerScore);
 
-    // Get scores from localStorage
-    const scores = JSON.parse(localStorage.getItem("aiInvasionScores") || "[]");
-    const top10 = scores.slice(0, 10);
-
-    // Try to sign the score if wallet is connected
+    // Get current wallet address
     const currentWalletAddress =
       window.WalletManager?.provider?.publicKey?.toString();
-    if (currentWalletAddress) {
-      try {
-        const signedData = await window.WalletManager.signScore(playerScore);
-        if (signedData) {
-          const scoreData = {
-            score: playerScore,
-            ...signedData,
-          };
 
-          scores.push(scoreData);
-          scores.sort((a, b) => b.score - a.score);
-          localStorage.setItem(
-            "aiInvasionScores",
-            JSON.stringify(scores.slice(0, 100))
-          ); // Keep top 100
-        }
-      } catch (err) {
-        console.error("❌ Error signing score:", err);
-      }
+    // Get all scores
+    const {
+      local: localScores,
+      remote: remoteScores,
+      combined: allScores,
+    } = await LeaderboardService.getAllScores(10);
+
+    // Get anonymous ID
+    const anonymousId = localStorage.getItem("anonymous_id");
+
+    // Check if we have valid scores
+    if (!allScores || !Array.isArray(allScores)) {
+      throw new Error("Invalid scores data");
     }
 
-    const playerRank =
-      scores.findIndex((score) => score.publicKey === currentWalletAddress) + 1;
+    // Get player rank for tweet text
+    let playerRank = "N/A";
+    if (currentWalletAddress) {
+      playerRank =
+        (await LeaderboardService.getPlayerRank(currentWalletAddress)) || "N/A";
+    } else {
+      // Find rank in local scores
+      const localRank =
+        localScores.findIndex((score) => score.anonymous_id === anonymousId) +
+        1;
+      playerRank = localRank || "N/A";
+    }
 
     // Create tweet text based on score
     const tweetText =
@@ -312,11 +316,16 @@ const showLeaderboard = async () => {
         box-shadow: 0 0 20px rgba(255,255,255,0.1);
       ">
         <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Top Scores</h2>
-        ${top10
+        
+        <!-- Display combined scores -->
+        ${allScores
           .map(
             (score, i) => `
           <div class="score-entry ${
-            score.publicKey === currentWalletAddress ? "current-player" : ""
+            (score.isLocal && score.anonymous_id === anonymousId) ||
+            score.wallet_address === currentWalletAddress
+              ? "current-player"
+              : ""
           }" 
                style="
                  margin: 10px 0;
@@ -324,7 +333,8 @@ const showLeaderboard = async () => {
                  display: flex;
                  justify-content: space-between;
                  ${
-                   score.publicKey === currentWalletAddress
+                   (score.isLocal && score.anonymous_id === anonymousId) ||
+                   score.wallet_address === currentWalletAddress
                      ? "background: rgba(255,255,255,0.1); border-radius: 8px;"
                      : ""
                  }
@@ -335,32 +345,74 @@ const showLeaderboard = async () => {
               score.score
             }</span>
             <span style="font-family: monospace; opacity: 0.8;">
-              ${score.publicKey.slice(0, 4)}...${score.publicKey.slice(-4)}
+              ${
+                score.isLocal
+                  ? score.anonymous_id === anonymousId
+                    ? "😎 You (Unverified)"
+                    : "👾 Anonymous"
+                  : score.wallet_address
+                  ? `${score.wallet_address.slice(
+                      0,
+                      4
+                    )}...${score.wallet_address.slice(-4)}`
+                  : "Unknown"
+              }
             </span>
-            ${
-              score.publicKey === currentWalletAddress
-                ? `
-              <button onclick="verifyIdentity('${score.publicKey}')"
-                      style="
-                        margin-left: 10px;
-                        padding: 4px 8px;
-                        background: #1DA1F2;
-                        border: none;
-                        color: white;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-size: 12px;
-                      ">
-                Verify Identity
-              </button>
-            `
-                : ""
-            }
           </div>
         `
           )
           .join("")}
-        
+
+        <!-- Add verification prompt -->
+        <div style="
+          margin-top: 20px;
+          text-align: center;
+          padding: 10px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 8px;
+        ">
+          ${
+            !currentWalletAddress
+              ? `
+            <p>Want to verify your score and join the global leaderboard?</p>
+            <button onclick="document.getElementById('wallet-connect').click()"
+                    style="
+                      background: #1DA1F2;
+                      color: white;
+                      padding: 12px;
+                      border-radius: 8px;
+                      border: none;
+                      cursor: pointer;
+                      font-weight: bold;
+                      margin-top: 10px;
+                      transition: all 0.3s ease;
+                    "
+                    onmouseover="this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.transform='scale(1)'">
+              Connect Wallet to Verify
+            </button>
+          `
+              : `
+            <button onclick="verifyAndSubmitScore(${playerScore})"
+                    style="
+                      background: #1DA1F2;
+                      color: white;
+                      padding: 12px;
+                      border-radius: 8px;
+                      border: none;
+                      cursor: pointer;
+                      font-weight: bold;
+                      transition: all 0.3s ease;
+                    "
+                    onmouseover="this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.transform='scale(1)'">
+              Submit to Global Leaderboard
+            </button>
+          `
+          }
+        </div>
+
+        <!-- Social sharing -->
         <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
           <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(
             tweetText
@@ -402,23 +454,9 @@ const showLeaderboard = async () => {
     `;
 
     leaderboardContainer.innerHTML = leaderboardHTML;
-    document.body.appendChild(leaderboardContainer);
   } catch (err) {
     console.error("❌ Error showing leaderboard:", err);
-    // Show error state in leaderboard
-    const leaderboardContainer = document.createElement("div");
-    leaderboardContainer.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
-    `;
+    // Show error state
     leaderboardContainer.innerHTML = `
       <div class="leaderboard" style="
         background: rgba(0,0,0,0.95);
@@ -430,8 +468,9 @@ const showLeaderboard = async () => {
         max-width: 90%;
         box-shadow: 0 0 20px rgba(255,255,255,0.1);
       ">
-        <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Error Loading Leaderboard</h2>
-        <p style="text-align: center; color: #ff4444;">Please try again later.</p>
+        <h2 style="text-align: center; margin-bottom: 20px; color: #fff;">Oops! Something went wrong</h2>
+        <p style="text-align: center; margin-bottom: 20px;">We couldn't load the leaderboard right now. Your score has been saved locally.</p>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">Score: ${playerScore}</p>
         <button onclick="closeLeaderboard()" 
                 style="
                   width: 100%;
@@ -442,7 +481,7 @@ const showLeaderboard = async () => {
                   border-radius: 8px;
                   cursor: pointer;
                   font-family: 'Orbitron', sans-serif;
-                  margin-top: 20px;
+                  transition: all 0.3s ease;
                 "
                 onmouseover="this.style.background='rgba(255,255,255,0.2)'"
                 onmouseout="this.style.background='rgba(255,255,255,0.1)'">
@@ -450,7 +489,30 @@ const showLeaderboard = async () => {
         </button>
       </div>
     `;
-    document.body.appendChild(leaderboardContainer);
+  }
+
+  // Always append the container
+  document.body.appendChild(leaderboardContainer);
+};
+
+// Add verification and submission function
+window.verifyAndSubmitScore = async (score) => {
+  try {
+    const signedData = await WalletManager.signScore(score);
+    if (signedData) {
+      await LeaderboardService.submitVerifiedScore(
+        score,
+        signedData.publicKey,
+        signedData.signature,
+        signedData.timestamp
+      );
+      // Refresh leaderboard after submission
+      closeLeaderboard(); // Close first
+      await showLeaderboard(); // Then show updated leaderboard
+    }
+  } catch (err) {
+    console.error("Error verifying and submitting score:", err);
+    alert("Failed to submit score. Please try again.");
   }
 };
 
@@ -515,12 +577,14 @@ window.verifyIdentity = async (publicKey) => {
   }
 };
 
-// Add close leaderboard function to window scope
+// Update close leaderboard function to be more thorough
 window.closeLeaderboard = () => {
-  const leaderboardContainer =
-    document.querySelector(".leaderboard")?.parentElement;
-  if (leaderboardContainer) {
-    leaderboardContainer.remove();
+  const container = document.querySelector(".leaderboard")?.parentElement;
+  if (container) {
+    container.style.opacity = "0";
+    setTimeout(() => {
+      container.remove();
+    }, 300); // Fade out animation
   }
 };
 
